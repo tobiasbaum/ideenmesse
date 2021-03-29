@@ -1,6 +1,22 @@
 div.devVoted {
     background-color: gray;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
 }
 div.devNotVoted {
     background-color: yellow;
+    padding: 5px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+div.idea {
+    background-color: #dddddd;
+    border: 1px solid black;
+    margin: 3px;
+    padding: 3px;
+}
+a {
+    text-decoration: underline;
+    cursor: pointer;
 }

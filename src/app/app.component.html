@@ -2,9 +2,9 @@
     <form>
                 Kürzel/Name: 
                 <input type="text" name="ownName" [(ngModel)]="this.formData.ownName" /><br/>
-        <button *ngIf="!this.formData.meetingID" (click)="this.waitForOthers()">Neue Ideenmesse starten</button>
+        <button *ngIf="!this.formData.meetingID" (click)="this.askForIdeas()">Neue Ideenmesse starten</button>
         <button *ngIf="gameExists()" (click)="this.continueGame()">Ideenmesse fortsetzen</button>
-        <button *ngIf="this.formData.meetingID" (click)="this.join()">Als Entwickler beitreten ...</button>
+        <button *ngIf="this.formData.meetingID" (click)="this.askForIdeas()">Als Entwickler beitreten ...</button>
         <button *ngIf="this.formData.meetingID" (click)="this.joinAsSpectator()">Als Zuschauer beitreten ...</button>
         <br/>
         <br/>
@@ -12,8 +12,42 @@
         <input type="text" name="meetingID" [(ngModel)]="this.formData.meetingID" />
 </form>
 </ng-container>
+<ng-container *ngIf="state === 'ideas'">
+    <table>
+        <tr>
+            <td style="vertical-align: top;">Idee 1:</td>
+            <td><input [(ngModel)]="this.ideaInput.idea1Title" placeholder="Titel" size="100" required/><br/>
+                <textarea [(ngModel)]="this.ideaInput.idea1Details" placeholder="Beschreibung"></textarea></td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">Idee 2:</td>
+            <td><input [(ngModel)]="this.ideaInput.idea2Title" placeholder="Titel" size="100" required/><br/>
+                <textarea [(ngModel)]="this.ideaInput.idea2Details" placeholder="Beschreibung"></textarea></td>
+        </tr>
+        <tr>
+            <td style="vertical-align: top;">Idee 3:</td>
+            <td><input [(ngModel)]="this.ideaInput.idea3Title" placeholder="Titel" size="100" required/><br/>
+                <textarea [(ngModel)]="this.ideaInput.idea3Details" placeholder="Beschreibung"></textarea></td>
+        </tr>
+    </table>
+    <button (click)="this.join()">Beitreten ...</button>
+</ng-container>
 <ng-container *ngIf="state === 'joined'">
+    Meeting-Link: <a [href]="this.getMeetingLink()">{{ this.getMeetingLink() }}</a><br/>
+    Teilnehmer: {{ this.fieldService.participant.allParticipants().join(", ") }}<br/>
+    Sortieren nach: <a (click)="this.fieldService.participant.sortByMsg(false)">Einfügereihenfolge</a> / <a (click)="this.fieldService.participant.sortByMsg(true)">Letzter Nachricht</a>
+
     <div *ngFor="let d of this.fieldService.participant.allDevelopers()" [ngClass]="this.fieldService.participant.votedFor(d)?'devVoted':'devNotVoted'">
-        Hallo {{ d.name }}
-    </div>
+        <b>{{ d.name }}</b> &nbsp; <a *ngIf="d.open" (click)="d.setOpen(false)">Zuklappen</a><a *ngIf="!d.open" (click)="d.setOpen(true)">Aufklappen</a>,
+        Top-Idee: <i>{{ d.getTopIdea() }}</i>,
+        Letzte Nachricht: <i>{{ d.getLastMessage() }}</i>
+        <ng-container *ngIf="d.open">
+            <div *ngFor="let idea of d.ideas; let idx = index" class="idea">
+                <b>Idee {{ idx + 1 }}: {{idea.title}}</b><br/>
+                <i><span [title]="d.voterNamesFor(idx)">{{d.voteCountFor(idx)}} Stimmen.</span> <a (click)="this.fieldService.participant.voteFor(d, idx)">Wählen</a></i><br/>
+                {{idea.details}}
+            </div>
+            <ideenmesse-chat-box [devName]="d.name"></ideenmesse-chat-box>
+        </ng-container>
+</div>
 </ng-container>

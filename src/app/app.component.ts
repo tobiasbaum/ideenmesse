@@ -28,6 +28,15 @@ export class AppComponent {
     meetingID: this.getSettingValue('ideenmesseMeetingID', ''),
   }
 
+  public ideaInput = {
+    idea1Title: '',
+    idea1Details: '',
+    idea2Title: '',
+    idea2Details: '',
+    idea3Title: '',
+    idea3Details: ''
+  }
+
   getSettingValue(key: string, defaultValue: string) {
     let paramValue = new URL(location.href).searchParams.get(key);
     if (paramValue) {
@@ -44,7 +53,8 @@ export class AppComponent {
 
   constructor(
       public fieldService: ParticipantStoreService,
-      private http: HttpClient, 
+      private http: HttpClient,
+      private cdr: ChangeDetectorRef,
       private ngz: NgZone) {
   }
 
@@ -86,6 +96,10 @@ export class AppComponent {
     });
   }
 
+public askForIdeas() {
+  this.state = 'ideas';
+}
+
 private loadDeckAndInitGame(peer: any, s: GameSettings) {
   // let deck: Card[] | undefined;
   // if (s.clean) {
@@ -94,7 +108,22 @@ private loadDeckAndInitGame(peer: any, s: GameSettings) {
   // } else {
   //   deck = undefined;
   // }
-  this.fieldService.init(new Participant(peer, peer.id, this.formData.ownName as string, s.clean));
+  let ideas;
+  if (s.clean) {
+    if (s.spectator) {
+      ideas = [];
+    } else {
+      ideas = [
+        { title: this.ideaInput.idea1Title, details: this.ideaInput.idea1Details },
+        { title: this.ideaInput.idea2Title, details: this.ideaInput.idea2Details },
+        { title: this.ideaInput.idea3Title, details: this.ideaInput.idea3Details }
+      ];
+    }
+  } else {
+    ideas = undefined;
+  }
+  let markCallback = () => this.ngz.run(() => this.cdr.markForCheck());
+  this.fieldService.init(new Participant(peer, peer.id, this.formData.ownName as string, ideas, markCallback));
   // if (s.spectator) {
   //   this.fieldService.gameField.setEndedPlayer(this.fieldService.gameField.myself.name, true);
   // }
@@ -105,17 +134,24 @@ private loadDeckAndInitGame(peer: any, s: GameSettings) {
 }
 
 join() {
-    var other = prompt('ID des Mitspielers');
-    if (other) {
-      this.start(other, true, false);
-    }
+  if (!this.formData.meetingID) {
+    this.waitForOthers();
+  } else {
+    this.doJoin(true, false);
+  }
 }
 
 joinAsSpectator() {
-  var other = prompt('ID des Mitspielers');
-  if (other) {
-    this.start(other, true, true);
+  this.doJoin(true, true);
+}
+
+doJoin(clean: boolean, spectator: boolean) {
+  let other = this.formData.meetingID;
+  if (!other) {
+    alert('Bitte Meeting-ID angeben');
+    return;
   }
+  this.start(other, clean, spectator);
 }
 
 waitForOthers() {
@@ -124,6 +160,10 @@ waitForOthers() {
 
 continueGame() {
   this.start(undefined, false, false);
+}
+
+getMeetingLink(): string {
+  return window.location.href.split('?')[0] + "?ideenmesseMeetingID=" + this.fieldService.participant.getPeerID();
 }
 
 }

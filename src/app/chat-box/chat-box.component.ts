@@ -1,24 +1,25 @@
-import { AfterViewChecked, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, Input, NgZone, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
 import { MsgData } from '../domain/participant';
 import { ParticipantStoreService } from '../participant-store.service';
 
 @Component({
-  selector: 'mrn-chat-box',
+  selector: 'ideenmesse-chat-box',
   templateUrl: './chat-box.component.html',
   styleUrls: ['./chat-box.component.scss']
 })
 export class ChatBoxComponent implements OnInit, AfterViewChecked {
 
+  @Input()
+  public devName!: string;
+
   public messages: MsgData[] = [];
 
   private destroy = new Subject();
   private scrollDirty: boolean = false;
+  public msg: string = "";
 
   constructor(private field: ParticipantStoreService, private cdr: ChangeDetectorRef, private ngz: NgZone) { 
-    field.subscribe(
-      gf => gf.registerMessageHandler((id: undefined, msg: any) => this.handleAddedMessage(msg)),
-      this.destroy);
   }
 
   public large: boolean = false;
@@ -31,6 +32,9 @@ export class ChatBoxComponent implements OnInit, AfterViewChecked {
   } 
 
   ngOnInit(): void {
+    this.field.subscribe(
+      gf => gf.registerMessageHandler((id: undefined, msg: any) => this.handleAddedMessage(msg)),
+      this.destroy);
   }
 
   ngOnDestroy(): void {
@@ -38,6 +42,9 @@ export class ChatBoxComponent implements OnInit, AfterViewChecked {
   }
 
   handleAddedMessage(msg: MsgData) {
+    if (msg.to != this.devName) {
+      return;
+    }
     this.ngz.run(() => {
       NgZone.assertInAngularZone();
       this.messages.push(msg);
@@ -62,10 +69,10 @@ export class ChatBoxComponent implements OnInit, AfterViewChecked {
   }
 
 sendMessage(): void {
-      var message = prompt('Nachricht');
-      if (message) {
-        this.field.participant.sendMessage(message);
+      if (this.msg) {
+        this.field.participant.sendMessage(this.msg, this.devName);
       }
+      this.msg = "";
   }
 
 }
