@@ -1,0 +1,37 @@
+<table cellpadding="0" cellspacing="0" style="width: 500px; margin-top: 3px; margin-bottom: 3px; float: right; background-color: #FFFFFF; border: solid 1px #000000">
+    <tr valign="top">
+        <td style="width: 34px; ">
+            <input type="button" (click)="this.sendMessage()" class="chatButton" title="chatten" />
+            <input type="button" (click)="toggleHeight()" class="chatboxButton" id="chatboxButton" [class.changeIcon]="this.changeIcon" />
+        </td>
+        <td style="width: 466px; ">
+            <div class="chatbox" id="chatbox" [class.large]="this.large">
+                <div *ngFor="let m of messages">
+                    <ng-container *ngIf="m.tr === ''">
+                        <span [style.color]="m.color">{{m.tc}}</span>
+                    </ng-container>
+                    <ng-container *ngIf="m.tr !== ''">
+                        <span [style.color]="m.color">{{m.tc}}: </span>{{m.tr}}
+                    </ng-container>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<!--
+<fieldset>
+<legend>Chat</legend>
+<button (click)="this.sendMessage()">Schreiben ...</button>
+<div class="chatbox" id="chatbox">
+    <div *ngFor="let m of messages">
+        <ng-container *ngIf="m.tr === ''">
+            <span [style.color]="m.color">{{m.tc}}</span>
+        </ng-container>
+        <ng-container *ngIf="m.tr !== ''">
+            <span [style.color]="m.color">{{m.tc}}: </span>{{m.tr}}
+        </ng-container>
+    </div>
+</div>
+</fieldset>
+-->

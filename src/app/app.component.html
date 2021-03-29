@@ -1,0 +1,19 @@
+<ng-container *ngIf="state === 'initial'">
+    <form>
+                Kürzel/Name: 
+                <input type="text" name="ownName" [(ngModel)]="this.formData.ownName" /><br/>
+        <button *ngIf="!this.formData.meetingID" (click)="this.waitForOthers()">Neue Ideenmesse starten</button>
+        <button *ngIf="gameExists()" (click)="this.continueGame()">Ideenmesse fortsetzen</button>
+        <button *ngIf="this.formData.meetingID" (click)="this.join()">Als Entwickler beitreten ...</button>
+        <button *ngIf="this.formData.meetingID" (click)="this.joinAsSpectator()">Als Zuschauer beitreten ...</button>
+        <br/>
+        <br/>
+        Meeting-ID:
+        <input type="text" name="meetingID" [(ngModel)]="this.formData.meetingID" />
+</form>
+</ng-container>
+<ng-container *ngIf="state === 'joined'">
+    <div *ngFor="let d of this.fieldService.participant.allDevelopers()" [ngClass]="this.fieldService.participant.votedFor(d)?'devVoted':'devNotVoted'">
+        Hallo {{ d.name }}
+    </div>
+</ng-container>

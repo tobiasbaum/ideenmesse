@@ -1,0 +1,54 @@
+div.chatbox {
+    overflow-y: scroll;
+    height: 44px;
+}
+
+div.chatbox.large {
+    overflow-y: scroll;
+    height: 350px;
+}
+
+input.chatButton {
+    width:32px; 
+    height:22px; 
+    display: block; 
+    background-image:url('chat_30x20.png');
+}
+
+input.chatboxButton {
+    width:32px;
+    height:22px;
+    display: block;
+    background-color: #FFFFFF;
+    border: solid 1px #000000;
+    background-image:url('expand_30x20.png');
+}
+
+input.chatboxButton:hover {
+    background-color: #C4C4C4;
+    cursor: pointer; 
+}
+
+input.chatboxButton.changeIcon {
+    width:32px;
+    height:22px;
+    display: block;
+    background-color: #FFFFFF;
+    border: solid 1px #000000;
+    background-image:url('impand_30x20.png');
+}
+
+input.chatboxButton.changeIcon:hover {
+    background-color: #C4C4C4;
+    cursor: pointer; 
+}
+
+input {
+    background-color: #FFFFFF;
+    border: solid 1px #000000;
+}
+
+input:hover {
+    background-color: #C4C4C4;
+    cursor: pointer; 
+}
