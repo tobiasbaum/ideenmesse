@@ -22,6 +22,7 @@ export class AppComponent {
   title = 'Ideenmesse';
 
   public state: string = 'initial';
+  public peer: any|undefined;
 
   public formData = {
     ownName: this.getSettingValue('ideenmesseUserName', ''),
@@ -85,14 +86,21 @@ export class AppComponent {
   
   createPeer(s: GameSettings) {
     //var peer = new Peer(undefined, {host: 'localhost', port: 9000, key: 'peerjs', debug: 2});
-    var peer = new Peer(undefined, {});
-    peer.on('error', (err: any) => {
+    this.peer = new Peer(undefined, 
+      {
+        config: {
+          iceServers: [
+            {urls: 'stun:stun.l.google.com:19302' },
+            {urls: 'turn:v2202012136631136755.bestsrv.de', username: 'ideenmesse', credential: 'clarifying-behind-anchoring-storyboard'}
+          ]
+        }
+      }
+    );
+    this.peer.on('error', (err: any) => {
         console.log(err);
-        alert('' + err);
     });
-    peer.on('open', (id: string) => {
-        //alert('My peer ID is: ' + id);
-        this.ngz.run(() => this.loadDeckAndInitGame(peer, s));
+    this.peer.on('open', (id: string) => {
+        this.ngz.run(() => this.loadDeckAndInitGame(this.peer, s));
     });
   }
 
@@ -164,6 +172,13 @@ continueGame() {
 
 getMeetingLink(): string {
   return window.location.href.split('?')[0] + "?ideenmesseMeetingID=" + this.fieldService.participant.getPeerID();
+}
+
+public reconnect(): void {
+  let id = prompt('Ziel-Meeting-ID');
+  if (id) {
+    this.fieldService.participant.connectToOtherPlayer(id);
+  }
 }
 
 }

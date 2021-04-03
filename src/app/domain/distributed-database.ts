@@ -132,8 +132,16 @@ export class DistributedDatabaseSystem {
 
   connectToNode(id: string) {
     console.log(this.ownPeerId + ' connects to ' + id);
+    this.reconnectIfDisconnected();
     var conn = this.peer.connect(id, {reliable: true});
     this.addNode(conn);
+  }
+
+  private reconnectIfDisconnected() {
+    if (this.peer.disconnected) {
+      console.log(this.ownPeerId + ' was disconnected and tries to reconnect');
+      this.peer.reconnect();
+    }
   }
 
   private addNode(conn: any) {
@@ -217,6 +225,7 @@ export class DistributedDatabaseSystem {
   }
 
   put(database: string, id: string | number, data: any) {
+    this.reconnectIfDisconnected();
     var packet = {
       src: this.ownPeerId,
       t: this.time++,

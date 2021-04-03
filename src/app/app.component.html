@@ -17,23 +17,23 @@
         <tr>
             <td style="vertical-align: top;">Idee 1:</td>
             <td><input [(ngModel)]="this.ideaInput.idea1Title" placeholder="Titel" size="100" required/><br/>
-                <textarea [(ngModel)]="this.ideaInput.idea1Details" placeholder="Beschreibung"></textarea></td>
+                <textarea [(ngModel)]="this.ideaInput.idea1Details" placeholder="Beschreibung" rows="4" cols="150"></textarea></td>
         </tr>
         <tr>
             <td style="vertical-align: top;">Idee 2:</td>
             <td><input [(ngModel)]="this.ideaInput.idea2Title" placeholder="Titel" size="100" required/><br/>
-                <textarea [(ngModel)]="this.ideaInput.idea2Details" placeholder="Beschreibung"></textarea></td>
+                <textarea [(ngModel)]="this.ideaInput.idea2Details" placeholder="Beschreibung" rows="4" cols="150"></textarea></td>
         </tr>
         <tr>
             <td style="vertical-align: top;">Idee 3:</td>
             <td><input [(ngModel)]="this.ideaInput.idea3Title" placeholder="Titel" size="100" required/><br/>
-                <textarea [(ngModel)]="this.ideaInput.idea3Details" placeholder="Beschreibung"></textarea></td>
+                <textarea [(ngModel)]="this.ideaInput.idea3Details" placeholder="Beschreibung" rows="4" cols="150"></textarea></td>
         </tr>
     </table>
     <button (click)="this.join()">Beitreten ...</button>
 </ng-container>
 <ng-container *ngIf="state === 'joined'">
-    Meeting-Link: <a [href]="this.getMeetingLink()">{{ this.getMeetingLink() }}</a><br/>
+    Meeting-Link: <a [href]="this.getMeetingLink()">{{ this.getMeetingLink() }}</a> &nbsp; <a (click)="this.reconnect()">Neu verbinden ...</a><br/>
     Teilnehmer: {{ this.fieldService.participant.allParticipants().join(", ") }}<br/>
     Sortieren nach: <a (click)="this.fieldService.participant.sortByMsg(false)">Einfügereihenfolge</a> / <a (click)="this.fieldService.participant.sortByMsg(true)">Letzter Nachricht</a>
 
@@ -50,4 +50,5 @@
             <ideenmesse-chat-box [devName]="d.name"></ideenmesse-chat-box>
         </ng-container>
 </div>
+<ideenmesse-peer-status [peer]="this.peer"></ideenmesse-peer-status>
 </ng-container>
