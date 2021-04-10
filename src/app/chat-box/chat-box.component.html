@@ -8,7 +8,7 @@
                     </ng-container>
                 </div>
             </div>
-            <input [(ngModel)]="this.msg" type="text" placeholder="Diskussionsbeitrag" (keyup.enter)="this.sendMessage()" size="100" />
+            <input [(ngModel)]="this.msg" type="text" placeholder="Diskussionsbeitrag / Begründung der Wahl" (keyup.enter)="this.sendMessage()" size="100" />
             <button (click)="this.sendMessage()" class="chatButton" title="chatten"></button>
             <button (click)="toggleHeight()" class="chatboxButton" title="Chat-Fenster vergrößern" id="chatboxButton" [class.changeIcon]="this.changeIcon"></button>
 

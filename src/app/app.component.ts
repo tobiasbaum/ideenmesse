@@ -99,7 +99,7 @@ export class AppComponent {
     this.peer.on('error', (err: any) => {
         console.log(err);
     });
-    this.peer.on('open', (id: string) => {
+    this.peer.once('open', (id: string) => {
         this.ngz.run(() => this.loadDeckAndInitGame(this.peer, s));
     });
   }
@@ -175,7 +175,7 @@ getMeetingLink(): string {
 }
 
 public reconnect(): void {
-  let id = prompt('Ziel-Meeting-ID');
+  let id = prompt('Ziel-Meeting-ID', this.formData.meetingID);
   if (id) {
     this.fieldService.participant.connectToOtherPlayer(id);
   }

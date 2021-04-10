@@ -73,6 +73,7 @@ export class DistributedDatabaseSystem {
   private ownPeerId: string;
   private time: number;
   private otherNames: string[];
+  private onceOpened: string[];
   private others: any[];
   private callbacks: any;
   private databases: any;
@@ -85,6 +86,7 @@ export class DistributedDatabaseSystem {
     this.ownPeerId = ownPeerId;
     this.time = 0;
     this.otherNames = [];
+    this.onceOpened = [];
     this.others = [];
     this.callbacks = {add: {}, update: {}, ignore: {}};
     this.databases = {};
@@ -144,6 +146,19 @@ export class DistributedDatabaseSystem {
     }
   }
 
+  private checkConnections() {
+    let aliveConns = this.others.filter(conn => conn.open || !this.onceOpened.includes(conn.peer));
+    if (aliveConns.length != this.others.length) {
+      console.log('connections were closed, cleaning up');
+      this.others = aliveConns;
+      this.otherNames = aliveConns.map(conn => conn.peer);
+    }
+    if (this.others.length == 0 && this.onceOpened.length > 0) {
+      // if all connections were lost, try a random one that once worked
+      this.connectToNode(this.onceOpened[Math.floor(Math.random() * this.onceOpened.length)]);
+    }
+  }
+
   private addNode(conn: any) {
     if (this.others.indexOf(conn) >= 0) {
       return;
@@ -154,7 +169,17 @@ export class DistributedDatabaseSystem {
     this.storage.setItem(this.systemName + '.meta.knownPeerIds', JSON.stringify(this.otherNames));
 
     conn.on('data', (d: any) => this.handleData(d));
-    conn.on('open', (d: any) => this.dumpDatabasesTo(conn));
+    conn.on('open', (d: any) => {
+      this.markConnectionOpeningEnded(conn.peer);
+      this.dumpDatabasesTo(conn);
+    });
+    conn.on('error', (d: any) => this.markConnectionOpeningEnded(conn.peer));
+  }
+
+  private markConnectionOpeningEnded(peerId: string) {
+    if (!this.onceOpened.includes(peerId)) {
+      this.onceOpened.push(peerId);
+    }
   }
 
   private dumpDatabasesTo(conn: any) {
@@ -226,6 +251,7 @@ export class DistributedDatabaseSystem {
 
   put(database: string, id: string | number, data: any) {
     this.reconnectIfDisconnected();
+    this.checkConnections();
     var packet = {
       src: this.ownPeerId,
       t: this.time++,

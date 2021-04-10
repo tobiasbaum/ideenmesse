@@ -33,22 +33,24 @@
     <button (click)="this.join()">Beitreten ...</button>
 </ng-container>
 <ng-container *ngIf="state === 'joined'">
-    Meeting-Link: <a [href]="this.getMeetingLink()">{{ this.getMeetingLink() }}</a> &nbsp; <a (click)="this.reconnect()">Neu verbinden ...</a><br/>
     Teilnehmer: {{ this.fieldService.participant.allParticipants().join(", ") }}<br/>
     Sortieren nach: <a (click)="this.fieldService.participant.sortByMsg(false)">Einfügereihenfolge</a> / <a (click)="this.fieldService.participant.sortByMsg(true)">Letzter Nachricht</a>
 
     <div *ngFor="let d of this.fieldService.participant.allDevelopers()" [ngClass]="this.fieldService.participant.votedFor(d)?'devVoted':'devNotVoted'">
         <b>{{ d.name }}</b> &nbsp; <a *ngIf="d.open" (click)="d.setOpen(false)">Zuklappen</a><a *ngIf="!d.open" (click)="d.setOpen(true)">Aufklappen</a>,
-        Top-Idee: <i>{{ d.getTopIdea() }}</i>,
+        Top-Idee: <i>{{ d.getTopIdea() }} ({{ d.getTopIdeaVoteCount() }} von {{ d.getTotalVoteCount()}} Stimmen)</i>,
         Letzte Nachricht: <i>{{ d.getLastMessage() }}</i>
         <ng-container *ngIf="d.open">
             <div *ngFor="let idea of d.ideas; let idx = index" class="idea">
                 <b>Idee {{ idx + 1 }}: {{idea.title}}</b><br/>
-                <i><span [title]="d.voterNamesFor(idx)">{{d.voteCountFor(idx)}} Stimmen.</span> <a (click)="this.fieldService.participant.voteFor(d, idx)">Wählen</a></i><br/>
+                <i><span [title]="d.voterNamesFor(idx)">{{d.voteCountFor(idx)}} Stimmen.</span> <a (click)="this.fieldService.participant.voteFor(d, idx)" *ngIf="d.getVoteFrom(this.fieldService.participant.name) != idx">Wählen</a></i><br/>
                 {{idea.details}}
             </div>
             <ideenmesse-chat-box [devName]="d.name"></ideenmesse-chat-box>
         </ng-container>
 </div>
+<br/>
+Meeting-Link: <a [href]="this.getMeetingLink()">{{ this.getMeetingLink() }}</a> &nbsp; <a (click)="this.reconnect()">Neu verbinden ...</a><br/>
+<br/>
 <ideenmesse-peer-status [peer]="this.peer"></ideenmesse-peer-status>
 </ng-container>

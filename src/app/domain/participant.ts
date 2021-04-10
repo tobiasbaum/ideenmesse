@@ -111,6 +111,27 @@ interface DeveloperDto {
       return best;
     }
 
+    getTopIdeaVoteCount(): number {
+      this.votersFor(0);
+      let bestCnt = 0;
+      for (let i = 0; i < this.voterCache.length; i++) {
+        let voteCnt = this.voteCountFor(i);
+        if (voteCnt > bestCnt) {
+          bestCnt = voteCnt;
+        }
+      }
+      return bestCnt;
+    }
+
+    getTotalVoteCount(): number {
+      this.votersFor(0);
+      let sum = 0;
+      for (let i = 0; i < this.voterCache.length; i++) {
+        sum += this.voteCountFor(i);
+      }
+      return sum;
+    }
+
     getLastMessage(): string {
       return this.lastMessage;
     }
@@ -127,7 +148,7 @@ interface DeveloperDto {
   
   class Participant {
     private readonly id: string;
-    private readonly name: string;
+    public readonly name: string;
     private readonly color: string;
     private participants: string[] = [];
     private developers: Developer[] = [];
