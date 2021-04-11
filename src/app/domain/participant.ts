@@ -1,6 +1,6 @@
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { DistributedDatabaseSystem } from './distributed-database';
+import { RTCDB } from 'rtcdb';
 
 interface IdeaDto {
   title: string;
@@ -30,7 +30,7 @@ interface DeveloperDto {
     
     constructor(
       public readonly name: string,
-      private readonly db: DistributedDatabaseSystem,
+      private readonly db: RTCDB,
       private readonly participant: Participant) {
 
       this.db.on(['add', 'update'], 'votes', true, () => {
@@ -152,7 +152,7 @@ interface DeveloperDto {
     private readonly color: string;
     private participants: string[] = [];
     private developers: Developer[] = [];
-    private readonly db: DistributedDatabaseSystem;
+    private readonly db: RTCDB;
     public readonly markCallback;
     private sortedByMsg: boolean = false;
 
@@ -161,7 +161,7 @@ interface DeveloperDto {
       this.name = ownName;
       this.markCallback = markCallback;
       let clean = typeof(ideas) != 'undefined';
-      this.db = new DistributedDatabaseSystem('ideenmesse.' + ownName, peer, ownId, localStorage, clean);
+      this.db = new RTCDB('ideenmesse.' + ownName, peer, ownId, localStorage, clean);
       this.db.on('add', 'ideas', true, (name: string, data: any) => {
         this.participants.push(name);
         if (data.ideas.length > 0) {
